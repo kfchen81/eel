@@ -1,12 +1,19 @@
-# Binaries for programs and plugins
+*.pyc
 *.exe
 *.exe~
-*.dll
-*.so
-*.dylib
-
-# Test binary, build with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+node_modules/*
+.idea
+.*~
+npm-debug.log
+build/
+dist/
+__build_image.sh
+html/
+templates/base.html.merged.html
+static/upload
+*.DS_Store
+config/upload/*
+_generate
+cmd
+main
+_pid
