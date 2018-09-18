@@ -79,7 +79,7 @@ class Watcher:
 						print line.rstrip()
 					else:
 						print '========= Compile EEL ========='
-						os.system('go build -v ./main.go')
+						os.system('go build -v ./devapp/main.go')
 						break
 			except KeyboardInterrupt:
 				print 'Ctrl+C received, stop'
@@ -111,5 +111,5 @@ class Watcher:
   
 
 if __name__ == '__main__':
-	os.system('go build -v ./main.go')
+	os.system('go build -v ./devapp/main.go')
 	Watcher()
