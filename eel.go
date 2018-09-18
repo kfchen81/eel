@@ -29,7 +29,7 @@ const logo string = `
    / ____/ /   / /
   / __/ / /   / /
  / /___/ /___/ /___
-/_____/_____/_____/  for speed & efficiency.  v0.1
+/_____/_____/_____/  for speed & efficiency. v0.1
 
 
 `
