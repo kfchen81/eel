@@ -22,9 +22,13 @@ import (
 	"github.com/kfchen81/eel/log"
 	"github.com/kfchen81/eel/config"
 	"fmt"
+	"github.com/kfchen81/eel/router"
+	"github.com/kfchen81/eel/handler"
 )
 
-const logo string = `
+type Request handler.Request
+
+const logo = `
     ________    __
    / ____/ /   / /
   / __/ / /   / /
@@ -35,30 +39,26 @@ const logo string = `
 `
 
 var endRunning chan bool
+//
+//func handler(resp http.ResponseWriter, req *http.Request) {
+//
+//}
 
-func handler(resp http.ResponseWriter, req *http.Request) {
+// export inner type
+type Context = handler.Context
+type RestResource = router.RestResource
+type Map = handler.Map
 
-}
 
-type RestResourceRegister struct {
-
-}
-
-func (p *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	log.Info("in RestResourceRegister")
-	respStr := "hello eel"
-	resp.Write([]byte(respStr))
-}
 
 type Service struct {
-	Handler *RestResourceRegister
+	Handler *router.RestResourceRegister
 	Server   *http.Server
 }
 
 func NewService() *Service {
-	resourceRegister := &RestResourceRegister{}
 	app := &Service{
-		Handler: resourceRegister,
+		Handler: router.NewRestResourceRegister(),
 		Server: &http.Server{},
 	}
 	return app
