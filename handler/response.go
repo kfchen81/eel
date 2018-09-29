@@ -14,11 +14,6 @@ import (
 type Map map[string]interface{}
 type FillOption map[string]bool
 
-const HTTP_200 int = 200
-const HTTP_500 int = 500
-const HTTP_531 int = 531
-const HTTP_404 int = 404
-
 //Response is a wrapper for the http.ResponseWriter
 //started set to true if response was written to then don't execute other handler
 type Response struct {
@@ -94,6 +89,7 @@ func (r *Response) Body(content []byte) error {
 		return err
 	}
 	
+	r.WriteHeader(http.StatusOK)
 	r.Header("Content-Length", strconv.Itoa(len(content)))
 	r.ContentLength = len(content)
 	
@@ -102,24 +98,24 @@ func (r *Response) Body(content []byte) error {
 }
 
 func (r *Response) Error(errCode string, errMsg string) {
-	r.ErrorWithCode(500, errCode, errMsg)
+	r.ErrorWithCode(500, errCode, errMsg, "")
 }
 
-func (r *Response) ErrorWithCode(code int, errCode string, errMsg string) {
+func (r *Response) ErrorWithCode(code int, errCode string, errMsg string, innerErrMsg string) {
 	r.Status = code
 	r.JSONWithOption(Map{
 		"code": code,
 		"errCode": errCode,
 		"errMsg": errMsg,
-		"innerErrMsg": "",
-		"data": "",
+		"innerErrMsg": innerErrMsg,
+		"data": nil,
 	}, true, false)
 }
 
+
 func (r *Response) JSON(data interface{}) {
-	r.Status = HTTP_200
 	r.JSONWithOption(Map{
-		"code": HTTP_200,
+		"code": http.StatusOK,
 		"errCode": "",
 		"errMsg": "",
 		"innerErrMsg": "",

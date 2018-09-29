@@ -46,7 +46,7 @@ var endRunning chan bool
 
 // export inner type
 type Context = handler.Context
-type RestResource = router.RestResource
+type RestResource = handler.RestResource
 type Map = handler.Map
 
 

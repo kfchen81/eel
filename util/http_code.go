@@ -32,36 +32,19 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 	}
 	
 	resource := this.endpoint2resource[endpoint]
+	log.Debug(this.endpoint2resource)
+	log.Debug(endpoint)
 	if resource == nil {
-		context.Response.ErrorWithCode(http.StatusNotFound, "resource:not_found", "无效的endpoint", "")
+		context.Response.ErrorWithCode(handler.HTTP_404, "resource:not_found", "无效的endpoint")
 	} else {
-		//check resource params
-		handler.CheckArgs(resource, context)
-		if context.Response.Started {
-			context.Response.Flush()
-			goto FinishHandle
-		}
-		
-		//pass param check, do prepare
 		resource.Prepare(context)
-		method := context.Request.Method()
-		log.Infow("http request method", "method", method)
-		log.Infow("http params", "params", context.Request.Input())
+		method := req.Method
 		switch method {
 		case "GET":
 			resource.Get(context)
-		case "PUT":
-			resource.Put(context)
-		case "POST":
-			resource.Post(context)
-		case "DELETE":
-			resource.Delete(context)
-		default:
-			http.Error(context.Response.ResponseWriter, "Method Not Allowed", 405)
 		}
 	}
 	
-	FinishHandle:
 	timeDur := time.Since(startTime)
 	statusCode := context.Response.Status
 	contentLength := context.Response.ContentLength

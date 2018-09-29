@@ -28,3 +28,11 @@ func (ctx *Context) Reset(rw http.ResponseWriter, r *http.Request) {
 	}
 	ctx.Response.Reset(rw)
 }
+
+func (ctx *Context) SetJSON(key string, value map[string]interface{}) {
+	ctx.Request.SetJSON(key, value)
+}
+
+func (ctx *Context) SetJSONArray(key string, value []interface{}) {
+	ctx.Request.SetJSONArray(key, value)
+}
