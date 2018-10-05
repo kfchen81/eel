@@ -17,6 +17,9 @@ type Request struct {
 
 func (r *Request) Reset(request *http.Request) {
 	r.HttpRequest = request
+	r.Name2JSONArray = nil
+	r.Name2JSON = nil
+	r.Filters = nil
 }
 
 // Query returns input data item string by a given string.
@@ -217,4 +220,9 @@ func (r *Request) GetFloat(key string, def ...float64) (float64, error) {
 		return def[0], nil
 	}
 	return strconv.ParseFloat(strv, 64)
+}
+
+// URL returns request url path (without query string, fragment).
+func (r *Request) URL() string {
+	return r.HttpRequest.URL.Path
 }

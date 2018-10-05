@@ -89,8 +89,9 @@ func (r *Response) Body(content []byte) error {
 		return err
 	}
 	
-	r.WriteHeader(http.StatusOK)
 	r.Header("Content-Length", strconv.Itoa(len(content)))
+	r.Header("Server", "MP Server v1.0")
+	r.WriteHeader(http.StatusOK)
 	r.ContentLength = len(content)
 	
 	io.Copy(r.ResponseWriter, buf)

@@ -78,7 +78,7 @@ class Watcher:
 					if line != '':
 						print line.rstrip()
 					else:
-						print '========= Compile EEL ========='
+						print '\n\n========= Compile EEL ========='
 						os.system('go build -v ./devapp/main.go')
 						break
 			except KeyboardInterrupt:

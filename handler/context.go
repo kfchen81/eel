@@ -27,6 +27,20 @@ func (ctx *Context) Reset(rw http.ResponseWriter, r *http.Request) {
 		ctx.Response = &Response{}
 	}
 	ctx.Response.Reset(rw)
+	
+	ctx.Data = nil
+}
+
+func (ctx *Context) Set(key string, value interface{}) {
+	if ctx.Data == nil {
+		ctx.Data = make(map[string]interface{})
+	}
+	
+	ctx.Data[key] = value
+}
+
+func (ctx *Context) Get(key string) interface{} {
+	return ctx.Data[key]
 }
 
 func (ctx *Context) SetJSON(key string, value map[string]interface{}) {

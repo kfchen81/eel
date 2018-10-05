@@ -17,6 +17,7 @@ package main
 import (
 	"github.com/kfchen81/eel"
 	_ "github.com/kfchen81/eel/devapp/routers"
+	_ "github.com/kfchen81/eel/devapp/middleware"
 )
 
 func main() {

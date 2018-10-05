@@ -45,8 +45,10 @@ func (this *Blog) Put(ctx *eel.Context) {
 }
 
 func (this *Blog) Post(ctx *eel.Context) {
+	account := ctx.Get("account").(string)
 	ctx.Response.JSON(eel.Map{
 		"method": "post",
+		"account": account,
 	})
 }
 

@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"github.com/kfchen81/eel/router"
 	"github.com/kfchen81/eel/handler"
+	"github.com/kfchen81/eel/util"
 )
 
 type Request handler.Request
@@ -48,7 +49,19 @@ var endRunning chan bool
 type Context = handler.Context
 type RestResource = handler.RestResource
 type Map = handler.Map
+type Middleware = handler.Middleware
 
+func RegisterResource(resource handler.RestResourceInterface) {
+	router.DoRegisterResource(resource)
+}
+
+func RegisterMiddleware(middleware handler.MiddlewareInterface) {
+	router.DoRegisterMiddleware(middleware)
+}
+
+func NewBusinessError(code string, msg string) *util.BusinessError{
+	return util.NewBusinessError(code, msg)
+}
 
 
 type Service struct {
