@@ -98,6 +98,12 @@ func (r *Response) Body(content []byte) error {
 	return nil
 }
 
+func (r *Response) Content(content []byte, contentType string) error {
+	r.Header("Content-Type", contentType)
+	r.Body(content)
+	return nil
+}
+
 func (r *Response) Error(errCode string, errMsg string) {
 	r.ErrorWithCode(500, errCode, errMsg, "")
 }

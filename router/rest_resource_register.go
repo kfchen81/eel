@@ -9,6 +9,13 @@ import (
 	"fmt"
 	"time"
 	"reflect"
+	"github.com/kfchen81/eel/config/env"
+	"path/filepath"
+	"github.com/kfchen81/eel/utils"
+	"os"
+	"io"
+	"bytes"
+	"sort"
 )
 
 type RestResourceRegister struct {
@@ -18,10 +25,53 @@ type RestResourceRegister struct {
 	sync.RWMutex
 }
 
+func ServeStaticFile(path string, response *handler.Response) bool {
+	gopaths := env.Get("GOPATH", "")
+	if gopaths == "" {
+		return false
+	}
+	
+	items := strings.Split(gopaths, ":")
+	for _, item := range items {
+		absPath := filepath.Join(item, "src/github.com/kfchen81/eel", path)
+		isExists := utils.FileExists(absPath)
+		log.Infow("check static file", "path", absPath, "exists", isExists)
+		if isExists {
+			file, err := os.Open(absPath)
+			if err != nil {
+				return false
+			}
+			defer file.Close()
+			
+			var bufferWriter bytes.Buffer
+			io.Copy(&bufferWriter, file)
+			
+			contentType := "text/html; charset=utf-8"
+			if strings.HasSuffix(path, ".css") {
+				contentType = "text/css"
+			} else if strings.HasSuffix(path, ".js") {
+				contentType = "text/javascript"
+			}
+			response.Header("Content-Type", contentType)
+			response.Body(bufferWriter.Bytes())
+			
+			return true
+		} else {
+		
+		}
+	}
+	
+	//AppPath, _ := filepath.Abs(filepath.Dir(os.Args[0]));
+	//log.Infow("request ", "AppPath", AppPath)
+	
+	return false
+}
+
 // Implement http.Handler interface.
 func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	startTime := time.Now()
 	log.Infow("request ", "path", req.URL.Path, "method", req.Method)
+	
 	//
 	//if AppPath, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
 	//	panic(err)
@@ -45,6 +95,7 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 	resource := this.endpoint2resource[endpoint]
 	if resource == nil {
 		//resource is not exists
+		ServeStaticFile(req.URL.Path, context.Response)
 		context.Response.ErrorWithCode(http.StatusNotFound, "resource:not_found", "无效的endpoint", "")
 	} else {
 		//resource found, go through middlewares
@@ -111,6 +162,27 @@ func NewRestResourceRegister() *RestResourceRegister {
 	}
 	
 	return gRegister
+}
+
+
+// Resources: get all registered resources
+func Resources() []string {
+	resources := make([]string, 0)
+	if gRegister != nil {
+		gRegister.Lock()
+		defer gRegister.Unlock()
+		
+		for _, v := range gRegister.endpoint2resource {
+			resource := v.(handler.RestResourceInterface).Resource()
+			if resource != "console.console" {
+				resources = append(resources, resource)
+			}
+		}
+		
+		sort.Strings(resources)
+	}
+	
+	return resources
 }
 
 func DoRegisterResource(resource handler.RestResourceInterface) {

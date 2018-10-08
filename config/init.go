@@ -6,6 +6,7 @@ import (
 	"os"
 	"github.com/kfchen81/eel/log"
 	"github.com/kfchen81/eel/utils"
+	_ "github.com/kfchen81/eel/config/env"
 )
 
 var (

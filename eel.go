@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"github.com/kfchen81/eel/router"
 	"github.com/kfchen81/eel/handler"
-	"github.com/kfchen81/eel/util"
+	"github.com/kfchen81/eel/utils"
 )
 
 type Request handler.Request
@@ -59,8 +59,8 @@ func RegisterMiddleware(middleware handler.MiddlewareInterface) {
 	router.DoRegisterMiddleware(middleware)
 }
 
-func NewBusinessError(code string, msg string) *util.BusinessError{
-	return util.NewBusinessError(code, msg)
+func NewBusinessError(code string, msg string) *utils.BusinessError{
+	return utils.NewBusinessError(code, msg)
 }
 
 

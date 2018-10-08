@@ -21,6 +21,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
+	"github.com/astaxie/beego/utils"
+	"github.com/kfchen81/eel/log"
 )
 
 // SelfPath gets compiled executable file absolute path
@@ -98,4 +101,26 @@ func GrepFile(patten string, filename string) (lines []string, err error) {
 		}
 	}
 	return lines, nil
+}
+
+// SearchFileInGoPath: 在$GOPATH中寻找文件
+func SearchFileInGoPath(path string) string {
+	gopaths := os.Getenv("GOPATH")
+	if gopaths == "" {
+		return ""
+	}
+	
+	items := strings.Split(gopaths, ":")
+	for _, item := range items {
+		absPath := filepath.Join(item, "src/github.com/kfchen81/eel", path)
+		isExists := utils.FileExists(absPath)
+		log.Infow("check static file", "path", absPath, "exists", isExists)
+		if isExists {
+			return absPath
+		} else {
+		
+		}
+	}
+	
+	return ""
 }

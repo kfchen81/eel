@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"bytes"
 	"runtime"
-	"github.com/kfchen81/eel/util"
+	"github.com/kfchen81/eel/utils"
 	"github.com/kfchen81/eel/log"
 )
 
@@ -23,7 +23,7 @@ func RecoverPanic(ctx *Context) {
 		//}
 		
 		errMsg := ""
-		if be, ok := err.(*util.BusinessError); ok {
+		if be, ok := err.(*utils.BusinessError); ok {
 			errMsg = fmt.Sprintf("%s:%s", be.ErrCode, be.ErrMsg)
 		
 		} else {
@@ -43,7 +43,7 @@ func RecoverPanic(ctx *Context) {
 		log.Error(buffer.String())
 		
 		var resp Map
-		if be, ok := err.(*util.BusinessError); ok {
+		if be, ok := err.(*utils.BusinessError); ok {
 			resp = Map{
 				"code": 500,
 				"data": nil,
