@@ -19,6 +19,7 @@ var (
 	appConfigProvider = "ini"
 	
 	ServiceConfig *serviceConfig
+	Runtime *runtime
 )
 
 func parseConfig(appConfigPath string) (err error) {
@@ -50,7 +51,7 @@ func init() {
 	if !utils.FileExists(appConfigPath) {
 		appConfigPath = filepath.Join(AppPath, "conf", filename)
 		if !utils.FileExists(appConfigPath) {
-			log.Panicf("no app.conf in %s directory", appConfigPath)
+			log.Logger.Panicf("no app.conf in %s directory", appConfigPath)
 			panic("no app.conf in ./conf directory")
 		}
 	}

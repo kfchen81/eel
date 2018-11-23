@@ -1,10 +1,14 @@
 package router
 
 import (
+	"github.com/kfchen81/eel/handler"
+	"sync"
+)
+
+import (
+	go_context "context"
 	"net/http"
 	"github.com/kfchen81/eel/log"
-	"sync"
-	"github.com/kfchen81/eel/handler"
 	"strings"
 	"fmt"
 	"time"
@@ -16,6 +20,10 @@ import (
 	"io"
 	"bytes"
 	"sort"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+	"github.com/kfchen81/eel/tracing"
+	"github.com/kfchen81/eel/config"
 )
 
 type RestResourceRegister struct {
@@ -35,7 +43,7 @@ func ServeStaticFile(path string, response *handler.Response) bool {
 	for _, item := range items {
 		absPath := filepath.Join(item, "src/github.com/kfchen81/eel", path)
 		isExists := utils.FileExists(absPath)
-		log.Infow("check static file", "path", absPath, "exists", isExists)
+		log.Logger.Infow("check static file", "path", absPath, "exists", isExists)
 		if isExists {
 			file, err := os.Open(absPath)
 			if err != nil {
@@ -70,7 +78,7 @@ func ServeStaticFile(path string, response *handler.Response) bool {
 // Implement http.Handler interface.
 func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	startTime := time.Now()
-	log.Infow("request ", "path", req.URL.Path, "method", req.Method)
+	log.Logger.Infow("request ", "path", req.URL.Path, "method", req.Method)
 	
 	//
 	//if AppPath, err = filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
@@ -108,6 +116,30 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 			}
 		}
 		
+		//add tracing span
+		spanCtx, _ := tracing.Tracer.Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(req.Header))
+		operationName := fmt.Sprintf("%s %s", req.Method, endpoint)
+		span := tracing.Tracer.StartSpan(operationName, ext.RPCServerOption(spanCtx))
+		bCtx := context.GetBusinessContext()
+		bCtx = opentracing.ContextWithSpan(bCtx, span)
+		//在结束时，report span
+		defer func() {
+			span := opentracing.SpanFromContext(bCtx)
+			if span != nil {
+				log.Logger.Debug("[Tracing] finish span in ServeHTTP")
+				span.(opentracing.Span).Finish()
+			}
+		}()
+		
+		//add gorm's Transaction
+		if config.Runtime.DB != nil {
+			tx := config.Runtime.DB.Begin()
+			bCtx = go_context.WithValue(bCtx, "orm", tx)
+			context.Set("orm", tx)
+		}
+		
+		context.SetBusinessContext(bCtx)
+		
 		//check resource params
 		handler.CheckArgs(resource, context)
 		if context.Response.Started {
@@ -118,8 +150,8 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 		//pass param check, do prepare
 		resource.Prepare(context)
 		method := context.Request.Method()
-		log.Infow("http request method", "method", method)
-		log.Infow("http params", "params", context.Request.Input())
+		log.Logger.Infow("http request method", "method", method)
+		log.Logger.Infow("http params", "params", context.Request.Input())
 		switch method {
 		case "GET":
 			resource.Get(context)
@@ -143,7 +175,7 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 	statusCode := context.Response.Status
 	contentLength := context.Response.ContentLength
 	accessLog := fmt.Sprintf("%s - - [%s] \"%s %s %s %d %d\" %f", req.RemoteAddr, startTime.Format("02/Jan/2006 03:04:05"), req.Method, req.RequestURI, req.Proto, statusCode, contentLength, timeDur.Seconds())
-	log.Infow(accessLog, "timeDur", timeDur.Seconds(), "status", statusCode)
+	log.Logger.Infow(accessLog, "timeDur", timeDur.Seconds(), "status", statusCode)
 }
 
 // global resource register
@@ -152,7 +184,7 @@ var gRegister *RestResourceRegister = nil
 // Create new RestResourceRegister as a http.Handler
 func NewRestResourceRegister() *RestResourceRegister {
 	if (gRegister == nil) {
-		log.Debug("create global RestResourceRegister")
+		log.Logger.Debug("create global RestResourceRegister")
 		gRegister = &RestResourceRegister{}
 		gRegister.pool.New = func() interface{} {
 			return handler.NewContext()
@@ -194,7 +226,7 @@ func DoRegisterResource(resource handler.RestResourceInterface) {
 	endpoint = fmt.Sprintf("/%s/%s/", endpoint[0:pos], endpoint[pos+1:])
 	//apiEndpoint := fmt.Sprintf("/%s/%s/", endpoint[0:pos], endpoint[pos+1:])
 	gRegister.endpoint2resource[endpoint] = resource
-	log.Infow("register rest resource", "endpoint", endpoint)
+	log.Logger.Infow("[rest_resource] register rest resource", "endpoint", endpoint)
 }
 
 func DoRegisterMiddleware(middleware handler.MiddlewareInterface) {
@@ -202,7 +234,7 @@ func DoRegisterMiddleware(middleware handler.MiddlewareInterface) {
 	defer gRegister.Unlock()
 	
 	gRegister.middlewares = append(gRegister.middlewares, middleware)
-	log.Infow("register middleware", "name", reflect.TypeOf(middleware))
+	log.Logger.Infow("[middleware] register middleware", "name", reflect.TypeOf(middleware))
 }
 
 func init() {

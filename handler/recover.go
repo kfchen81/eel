@@ -6,21 +6,17 @@ import (
 	"runtime"
 	"github.com/kfchen81/eel/utils"
 	"github.com/kfchen81/eel/log"
+	"github.com/kfchen81/gorm"
 )
 
 func RecoverPanic(ctx *Context) {
+	log.Logger.Debug("[router] in RecoverPanic...")
 	if err := recover(); err != nil {
-		//rollback commit
-		//o := ctx.Input.Data()["sessionOrm"]
-		//o.(orm.Ormer).Rollback()
-		log.Warn("[ORM] rollback transaction 2")
-		
-		//finish span
-		//span := ctx.Input.GetData("span")
-		//if span != nil {
-		//	beego.Info("[Tracing] finish span in recoverPanic")
-		//	span.(opentracing.Span).Finish()
-		//}
+		orm := ctx.Get("orm")
+		if orm != nil {
+			log.Logger.Warn("[ORM] rollback transaction")
+			orm.(*gorm.DB).Rollback()
+		}
 		
 		errMsg := ""
 		if be, ok := err.(*utils.BusinessError); ok {
@@ -40,7 +36,7 @@ func RecoverPanic(ctx *Context) {
 			}
 			buffer.WriteString(fmt.Sprintf("%s:%d\n", file, line))
 		}
-		log.Error(buffer.String())
+		log.Logger.Error(buffer.String())
 		
 		var resp Map
 		if be, ok := err.(*utils.BusinessError); ok {
@@ -61,5 +57,11 @@ func RecoverPanic(ctx *Context) {
 			}
 		}
 		ctx.Response.JSON(resp)
+	} else {
+		orm := ctx.Get("orm")
+		if orm != nil {
+			log.Logger.Debug("[ORM] commit transaction")
+			orm.(*gorm.DB).Commit()
+		}
 	}
 }

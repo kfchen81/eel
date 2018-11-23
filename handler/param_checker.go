@@ -14,7 +14,7 @@ func CheckArgs(r RestResourceInterface, ctx *Context) {
 	
 	//if app, ok := r.AppController.(RestResourceInterface); ok {
 	method2parameters := r.GetParameters()
-	log.Info(method2parameters)
+	log.Logger.Info(method2parameters)
 	if method2parameters != nil {
 		if parameters, ok := method2parameters[method]; ok {
 			actualParams := req.Input()

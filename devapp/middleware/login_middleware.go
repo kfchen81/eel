@@ -10,6 +10,6 @@ type LoginMiddleware struct {
 }
 
 func (this *LoginMiddleware) ProcessRequest(ctx *eel.Context) {
-	log.Info("i am in login middleware process request")
+	log.Logger.Info("i am in login middleware process request")
 }
 

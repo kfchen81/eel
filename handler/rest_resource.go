@@ -91,7 +91,7 @@ func (r *RestResource) GetBusinessContext() context.Context {
 
 // prepare for request handling
 func (r *RestResource) Prepare(ctx *Context) {
-	log.Debug("in RestResource's Prepare...")
+	log.Logger.Debug("in RestResource's Prepare...")
 }
 
 //func (r *RestResource) Finish() {

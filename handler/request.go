@@ -103,7 +103,7 @@ func (r *Request) Method() string {
 	if method == "POST" {
 		input := r.Input()
 		_method := input.Get("_method")
-		log.Infow("_method", "value", _method)
+		log.Logger.Infow("_method", "value", _method)
 		if _method == "put" {
 			method = "PUT"
 		} else if _method == "delete" {
@@ -225,4 +225,8 @@ func (r *Request) GetFloat(key string, def ...float64) (float64, error) {
 // URL returns request url path (without query string, fragment).
 func (r *Request) URL() string {
 	return r.HttpRequest.URL.Path
+}
+
+func (r *Request) Header(key string) string {
+	return r.HttpRequest.Header.Get(key)
 }

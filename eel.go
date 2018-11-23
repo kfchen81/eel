@@ -15,6 +15,7 @@
 package eel
 
 import (
+	"context"
 	"net/http"
 	"time"
 	"os"
@@ -25,6 +26,13 @@ import (
 	"github.com/kfchen81/eel/router"
 	"github.com/kfchen81/eel/handler"
 	"github.com/kfchen81/eel/utils"
+	"github.com/kfchen81/eel/db"
+	"go.uber.org/zap"
+	"github.com/kfchen81/eel/middleware"
+	"github.com/kfchen81/eel/tracing"
+	"github.com/kfchen81/eel/rest_client"
+	"encoding/json"
+	"github.com/kfchen81/gorm"
 )
 
 type Request handler.Request
@@ -50,6 +58,32 @@ type Context = handler.Context
 type RestResource = handler.RestResource
 type Map = handler.Map
 type Middleware = handler.Middleware
+type Model = db.Model
+type DeletableModel = db.DeletableModel
+
+var Logger *zap.SugaredLogger = log.Logger
+var Runtime = config.Runtime
+var Tracer = tracing.Tracer
+
+// export Middleware
+type JWTMiddleware = middleware.JWTMiddleware
+
+type IModel interface {
+	TableName() string
+}
+
+type RepositoryBase struct {
+	Ctx context.Context
+}
+
+type ServiceBase struct {
+	Ctx context.Context
+}
+
+type EntityBase struct {
+	Ctx   context.Context
+	Model interface{}
+}
 
 func RegisterResource(resource handler.RestResourceInterface) {
 	router.DoRegisterResource(resource)
@@ -59,8 +93,34 @@ func RegisterMiddleware(middleware handler.MiddlewareInterface) {
 	router.DoRegisterMiddleware(middleware)
 }
 
+func RegisterModel(model interface{}) {
+	db.RegisterModel(model)
+}
+
+func GetRegisteredModels() []interface{} {
+	return db.GetRegisteredModels()
+}
+
 func NewBusinessError(code string, msg string) *utils.BusinessError{
 	return utils.NewBusinessError(code, msg)
+}
+
+func MakeErrorResponse(code int32, errCode string, errMsg string, innerErrMsgs ...string) *handler.RestResponse {
+	return MakeErrorResponse(code, errCode, errMsg, innerErrMsgs...)
+}
+
+func NewResource(ctx context.Context) *rest_client.Resource {
+	return rest_client.NewResource(ctx)
+}
+
+func ToJsonString(obj interface{}) string {
+	bytes, _ := json.Marshal(obj)
+	return string(bytes)
+}
+
+func GetOrmFromContext(ctx context.Context) *gorm.DB {
+	o := ctx.Value("orm")
+	return o.(*gorm.DB)
 }
 
 
@@ -90,9 +150,9 @@ func (this *Service) run() {
 	this.Server.WriteTimeout = writeTimeout * time.Second
 	this.Server.Addr = addr
 	
-	log.Infof("http server Running on http://%s\n", this.Server.Addr)
+	Logger.Infof("http server Running on http://%s\n", this.Server.Addr)
 	if err := this.Server.ListenAndServe(); err != nil {
-		log.Fatalf("ListenAndServe: ", err)
+		Logger.Fatalf("ListenAndServe: ", err)
 		time.Sleep(100 * time.Microsecond)
 		endRunning <- true
 	}

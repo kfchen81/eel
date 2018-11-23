@@ -15,12 +15,37 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"github.com/kfchen81/eel"
+	_ "github.com/kfchen81/eel/devapp/models"
 	_ "github.com/kfchen81/eel/devapp/routers"
 	_ "github.com/kfchen81/eel/devapp/middleware"
+	"github.com/bitly/go-simplejson"
+	"github.com/kfchen81/eel/devapp/business/account"
 )
 
+func NewBusinessContext(ctx context.Context, request *http.Request, userId int, jwtToken string, RawData *simplejson.Json) context.Context {
+	platformId, _ := RawData.Get("pid").Int()
+	user := new(account.User)
+	user.Model = nil
+	user.Id = userId
+	user.PlatformId = platformId
+	user.RawData = RawData
+	
+	//add orm
+	ctx = context.WithValue(ctx, "jwt", jwtToken)
+	var o interface{} = nil//orm.NewOrmWithSpan(span)
+	ctx = context.WithValue(ctx, "orm", o)
+	
+	user.Ctx = ctx
+	
+	ctx = context.WithValue(ctx, "user", user)
+	return ctx
+}
+
 func main() {
+	eel.Runtime.NewBusinessContext = NewBusinessContext
 	eel.RunService()
 }
 

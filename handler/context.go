@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -49,4 +50,17 @@ func (ctx *Context) SetJSON(key string, value map[string]interface{}) {
 
 func (ctx *Context) SetJSONArray(key string, value []interface{}) {
 	ctx.Request.SetJSONArray(key, value)
+}
+
+func (ctx *Context) GetBusinessContext() context.Context {
+	value := ctx.Get("bContext")
+	if value == nil {
+		return nil
+	} else {
+		return value.(context.Context)
+	}
+}
+
+func (ctx *Context) SetBusinessContext(value interface{}) {
+	ctx.Set("bContext", value)
 }

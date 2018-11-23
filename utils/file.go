@@ -114,7 +114,7 @@ func SearchFileInGoPath(path string) string {
 	for _, item := range items {
 		absPath := filepath.Join(item, "src/github.com/kfchen81/eel", path)
 		isExists := utils.FileExists(absPath)
-		log.Infow("check static file", "path", absPath, "exists", isExists)
+		log.Logger.Infow("check static file", "path", absPath, "exists", isExists)
 		if isExists {
 			return absPath
 		} else {

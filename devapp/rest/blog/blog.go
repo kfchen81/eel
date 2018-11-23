@@ -2,7 +2,8 @@ package blog
 
 import (
 	"github.com/kfchen81/eel"
-	"github.com/kfchen81/eel/log"
+	"github.com/kfchen81/eel/devapp/business/blog"
+	"github.com/kfchen81/eel/devapp/business/account"
 )
 
 type Blog struct {
@@ -16,7 +17,7 @@ func (this *Blog) Resource() string {
 func (this *Blog) GetParameters() map[string][]string {
 	return map[string][]string{
 		"GET":    []string{"id:int"},
-		"PUT":    []string{"type:int", "content", "info:json", "person:json-array", "?name"},
+		"PUT":    []string{"title", "content"},
 		"DELETE": []string{"id:int"},
 	}
 }
@@ -29,18 +30,18 @@ func (this *Blog) Get(ctx *eel.Context) {
 }
 
 func (this *Blog) Put(ctx *eel.Context) {
+	title := ctx.Request.GetString("title")
 	content := ctx.Request.GetString("content")
-	aType, _ := ctx.Request.GetInt("type")
-	name := ctx.Request.GetString("name", "not_found")
-	info := ctx.Request.GetJSON("info")
-	persons := ctx.Request.GetJSONArray("person")
-	log.Info("in blog.Put")
+	bCtx := ctx.GetBusinessContext()
+	user := account.GetUserFromContext(bCtx)
+	
+	newBlog := blog.NewBlog(bCtx, user, title, content)
+
+	eel.Logger.Info("in blog.Put")
 	ctx.Response.JSON(eel.Map{
-		"type": aType,
-		"content": content,
-		"name": name,
-		"info": info,
-		"persons": persons,
+		"id": newBlog.Id,
+		"title": newBlog.Title,
+		"content": newBlog.Content,
 	})
 }
 
