@@ -103,7 +103,7 @@ func CheckArgs(r RestResourceInterface, ctx *Context) {
 			//r.Ctx.Input.Data()["sessionOrm"] = o
 			//if !r.Ctx.ResponseWriter.Started {
 			//	o.Begin()
-			//	beego.Info("[ORM] start transaction")
+			//	eel.Info("[ORM] start transaction")
 			//} else {
 			//}
 		}

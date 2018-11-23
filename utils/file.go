@@ -1,4 +1,4 @@
-// Copyright 2014 beego Author. All Rights Reserved.
+// Copyright 2014 eel Author. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"github.com/astaxie/beego/utils"
 	"github.com/kfchen81/eel/log"
 )
 
@@ -113,7 +112,7 @@ func SearchFileInGoPath(path string) string {
 	items := strings.Split(gopaths, ":")
 	for _, item := range items {
 		absPath := filepath.Join(item, "src/github.com/kfchen81/eel", path)
-		isExists := utils.FileExists(absPath)
+		isExists := FileExists(absPath)
 		log.Logger.Infow("check static file", "path", absPath, "exists", isExists)
 		if isExists {
 			return absPath

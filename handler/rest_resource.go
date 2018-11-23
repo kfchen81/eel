@@ -18,10 +18,10 @@ type RestResourceInterface interface {
 	//EnableHTMLResource() bool
 	GetParameters() map[string][]string
 	//GetBusinessContext() context.Context
-	//SetBeegoController(ctx *beego_context.Context, data map[interface{}]interface{})
+	//SeteelController(ctx *eel_context.Context, data map[interface{}]interface{})
 }
 
-/*RestResource 扩展beego.Controller, 作为rest中各个资源的基类
+/*RestResource 扩展eel.Controller, 作为rest中各个资源的基类
  */
 type RestResource struct {
 	Ctx  *context.Context
@@ -100,12 +100,12 @@ func (r *RestResource) Prepare(ctx *Context) {
 //		o := bCtx.Value("orm")
 //		if o != nil {
 //			o.(orm.Ormer).Commit()
-//			beego.Info("[ORM] commit transaction 2")
+//			eel.Info("[ORM] commit transaction 2")
 //		}
 //
 //		span := opentracing.SpanFromContext(bCtx)
 //		if span != nil {
-//			beego.Info("[Tracing] finish span in Controller.Finish")
+//			eel.Info("[Tracing] finish span in Controller.Finish")
 //			span.(opentracing.Span).Finish()
 //		}
 //	}

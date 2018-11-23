@@ -8,7 +8,7 @@ import (
 	"github.com/uber/jaeger-client-go"
 	"time"
 	eel_config "github.com/kfchen81/eel/config"
-	"github.com/kfchen81/eel"
+	"github.com/kfchen81/eel/log"
 )
 
 var Tracer opentracing.Tracer
@@ -54,5 +54,5 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 func init() {
 	serviceName := eel_config.ServiceConfig.String("SERVICE_NAME")
 	Tracer, Closer = initJaeger(serviceName)
-	eel.Logger.Debug("[tracing] Tracer ", Tracer)
+	log.Logger.Debug("[tracing] Tracer ", Tracer)
 }
