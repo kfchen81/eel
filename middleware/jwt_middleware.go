@@ -91,7 +91,6 @@ func (this *JWTMiddleware) ProcessRequest(ctx *handler.Context) {
 		ctx.Response.JSON(response)
 		return
 	}
-	log.Logger.Info("i am in jwt middleware process request")
 }
 
 func (this *JWTMiddleware) ProcessResponse(ctx *handler.Context) {

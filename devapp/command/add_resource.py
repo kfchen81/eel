@@ -107,7 +107,7 @@ class Command(BaseCommand):
 	def render_file_to(self, template_name, target_dir_path, context):
 		from jinja2 import Template
 
-		with open('%s/%s' % (TEMPLATE_FILE_DIR, template_name), 'rb') as f:
+		with open('%s/eel/%s' % (TEMPLATE_FILE_DIR, template_name), 'rb') as f:
 			template_content = f.read()
 
 		template = Template(template_content.decode('utf-8'))
@@ -186,7 +186,7 @@ class Command(BaseCommand):
 		if os.path.exists(generated_dir):
 			shutil.rmtree(generated_dir)
 
-		self.download_template_files()
+		#self.download_template_files()
 	
 		names = self.get_names(resource)
 		names['package'] = package
@@ -200,9 +200,9 @@ class Command(BaseCommand):
 		# print 'file is generated under ./_generate dir, please copy to real dirs'
 		# print 'Do you want to copy files now? (y/n): ',
 
-		if os.path.exists(TEMPLATE_FILE_DIR):
-			print "remove %s" % TEMPLATE_FILE_DIR
-			shutil.rmtree(TEMPLATE_FILE_DIR)
+		#if os.path.exists(TEMPLATE_FILE_DIR):
+		#	print "remove %s" % TEMPLATE_FILE_DIR
+		#	shutil.rmtree(TEMPLATE_FILE_DIR)
 
 		input = 'n'#raw_input().strip()
 		if input == 'Y' or input == 'y':

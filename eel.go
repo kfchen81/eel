@@ -60,6 +60,7 @@ type Map = handler.Map
 type Middleware = handler.Middleware
 type Model = db.Model
 type DeletableModel = db.DeletableModel
+type FillOption = map[string]bool
 
 var Logger *zap.SugaredLogger = log.Logger
 var Runtime = config.Runtime
@@ -107,6 +108,10 @@ func NewBusinessError(code string, msg string) *utils.BusinessError{
 
 func MakeErrorResponse(code int32, errCode string, errMsg string, innerErrMsgs ...string) *handler.RestResponse {
 	return MakeErrorResponse(code, errCode, errMsg, innerErrMsgs...)
+}
+
+func MakeResponse(data interface{}) *handler.RestResponse {
+	return MakeResponse(data)
 }
 
 func NewResource(ctx context.Context) *rest_client.Resource {

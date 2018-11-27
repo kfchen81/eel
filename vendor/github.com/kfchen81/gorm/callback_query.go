@@ -18,6 +18,11 @@ func queryCallback(scope *Scope) {
 	if _, skip := scope.InstanceGet("gorm:skip_query_callback"); skip {
 		return
 	}
+	
+	//we are only preloading relations, dont touch base model
+	if _, skip := scope.InstanceGet("gorm:only_preload"); skip {
+		return
+	}
 
 	defer scope.trace(NowFunc())
 
@@ -50,7 +55,7 @@ func queryCallback(scope *Scope) {
 		scope.Err(errors.New("unsupported destination, should be slice or struct"))
 		return
 	}
-
+	
 	scope.prepareQuerySQL()
 
 	if !scope.HasError() {

@@ -75,6 +75,7 @@ func ServeStaticFile(path string, response *handler.Response) bool {
 	return false
 }
 
+
 // Implement http.Handler interface.
 func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	startTime := time.Now()
@@ -122,6 +123,7 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 		span := tracing.Tracer.StartSpan(operationName, ext.RPCServerOption(spanCtx))
 		bCtx := context.GetBusinessContext()
 		bCtx = opentracing.ContextWithSpan(bCtx, span)
+		context.Set("rootSpan", span)
 		//在结束时，report span
 		defer func() {
 			span := opentracing.SpanFromContext(bCtx)
@@ -133,7 +135,10 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 		
 		//add gorm's Transaction
 		if config.Runtime.DB != nil {
+			subSpan := tracing.CreateSubSpan(span, "begin")
 			tx := config.Runtime.DB.Begin()
+			subSpan.Finish()
+			tx.InstantSet("rootSpan", span)
 			bCtx = go_context.WithValue(bCtx, "orm", tx)
 			context.Set("orm", tx)
 		}

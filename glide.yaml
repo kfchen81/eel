@@ -16,4 +16,4 @@ import:
 - package: github.com/pkg/errors
   version: ~0.8.0
 - package: github.com/kfchen81/gorm
-  version: ~1.9.1
+  version: ~1.9.2

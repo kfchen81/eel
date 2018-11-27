@@ -1,9 +1,10 @@
 package blog
 
 import (
-	"github.com/kfchen81/eel"
-	"github.com/kfchen81/eel/devapp/business/blog"
 	"github.com/kfchen81/eel/devapp/business/account"
+	b_blog "github.com/kfchen81/eel/devapp/business/blog"
+
+	"github.com/kfchen81/eel"
 )
 
 type Blog struct {
@@ -23,38 +24,55 @@ func (this *Blog) GetParameters() map[string][]string {
 }
 
 func (this *Blog) Get(ctx *eel.Context) {
-	name := ctx.Request.GetString("name")
-	ctx.Response.JSON(eel.Map{
-		"name": name,
-	})
+	req := ctx.Request
+	id, _ := req.GetInt("id")
+
+	bCtx := ctx.GetBusinessContext()
+	blogRepository := b_blog.NewBlogRepository(bCtx)
+	blog := blogRepository.GetBlog(id)
+
+	encodeService := b_blog.NewEncodeBlogService(bCtx)
+	respData := encodeService.Encode(blog)
+
+	ctx.Response.JSON(respData)
 }
 
 func (this *Blog) Put(ctx *eel.Context) {
-	title := ctx.Request.GetString("title")
-	content := ctx.Request.GetString("content")
+	req := ctx.Request
+	title := req.GetString("title")
+	content := req.GetString("content")
+
 	bCtx := ctx.GetBusinessContext()
 	user := account.GetUserFromContext(bCtx)
-	
-	newBlog := blog.NewBlog(bCtx, user, title, content)
+	blog := b_blog.NewBlog(bCtx, user, title, content)
 
-	eel.Logger.Info("in blog.Put")
 	ctx.Response.JSON(eel.Map{
-		"id": newBlog.Id,
-		"title": newBlog.Title,
-		"content": newBlog.Content,
+		"id": blog.Id,
 	})
 }
 
 func (this *Blog) Post(ctx *eel.Context) {
-	account := ctx.Get("account").(string)
-	ctx.Response.JSON(eel.Map{
-		"method": "post",
-		"account": account,
-	})
+	req := ctx.Request
+	id, _ := req.GetInt("id")
+	title := req.GetString("title")
+	content := req.GetString("content")
+
+	bCtx := ctx.GetBusinessContext()
+	blogRepository := b_blog.NewBlogRepository(bCtx)
+	blog := blogRepository.GetBlog(id)
+
+	blog.Update(title, content)
+
+	ctx.Response.JSON(eel.Map{})
 }
 
 func (this *Blog) Delete(ctx *eel.Context) {
-	ctx.Response.JSON(eel.Map{
-		"method": "delete",
-	})
+	req := ctx.Request
+	id, _ := req.GetInt("id")
+
+	bCtx := ctx.GetBusinessContext()
+	blogRepository := b_blog.NewBlogRepository(bCtx)
+	blogRepository.DeleteBlog(id)
+
+	ctx.Response.JSON(eel.Map{})
 }

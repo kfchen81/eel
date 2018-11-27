@@ -156,7 +156,7 @@ func (s JoinTableHandler) Delete(handler JoinTableHandlerInterface, db *DB, sour
 		values = append(values, value)
 	}
 
-	return db.Table(handler.Table(db)).Where(strings.Join(conditions, " AND "), values...).Delete("").Error
+	return db.Table(handler.Table(db)).Where(strings.Join(conditions, " AND "), values...).OriginDelete("").Error
 }
 
 // JoinWith query with `Join` conditions

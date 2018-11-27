@@ -1,5 +1,5 @@
-hash: 801d635255c0db1670619b0a8170c047d3e106a4d512d6c9ed06e9653299ea15
-updated: 2018-11-23T20:30:04.529308+08:00
+hash: 65ad590ce6464ce47ef30415ed88133db43e3014b82d0b9671b427a135a2d1ba
+updated: 2018-11-26T13:28:01.181361+08:00
 imports:
 - name: github.com/bitly/go-simplejson
   version: aabad6e819789e569bd6aabf444c935aa9ba1e44
@@ -10,7 +10,7 @@ imports:
 - name: github.com/jinzhu/inflection
   version: 04140366298a54a039076d798123ffa108fff46c
 - name: github.com/kfchen81/gorm
-  version: 6ed508ec6a4ecb3531899a69cbc746ccf65a4166
+  version: 8d6c126bdc435b4bd76ea88625147155f94b79fa
   subpackages:
   - dialects/mysql
 - name: github.com/opentracing/opentracing-go

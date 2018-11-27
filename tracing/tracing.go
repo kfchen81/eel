@@ -16,6 +16,7 @@ var Closer io.Closer
 
 func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 	tracingMode := eel_config.ServiceConfig.String("tracing::MODE")
+	fmt.Println("tracingMode is ", tracingMode)
 	var cfg *config.Configuration
 	
 	if tracingMode == "dev" {
@@ -49,6 +50,16 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 	
 	opentracing.SetGlobalTracer(tracer)
 	return tracer, closer
+}
+
+func CreateSubSpan(rootSpan opentracing.Span, operationName string) opentracing.Span {
+	operationName = fmt.Sprintf("db-%s", operationName)
+	subSpan := rootSpan.Tracer().StartSpan(
+		operationName,
+		opentracing.ChildOf(rootSpan.Context()),
+	)
+	
+	return subSpan
 }
 
 func init() {

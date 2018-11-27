@@ -7,15 +7,29 @@ import (
 	"github.com/kfchen81/eel/utils"
 	"github.com/kfchen81/eel/log"
 	"github.com/kfchen81/gorm"
+	"github.com/kfchen81/eel/tracing"
+	"github.com/opentracing/opentracing-go"
 )
 
 func RecoverPanic(ctx *Context) {
 	log.Logger.Debug("[router] in RecoverPanic...")
+	cachedSpan := ctx.Get("rootSpan")
+	var rootSpan opentracing.Span
+	if cachedSpan != nil {
+		rootSpan = cachedSpan.(opentracing.Span)
+	}
 	if err := recover(); err != nil {
 		orm := ctx.Get("orm")
 		if orm != nil {
 			log.Logger.Warn("[ORM] rollback transaction")
+			var subSpan opentracing.Span
+			if cachedSpan != nil {
+				subSpan = tracing.CreateSubSpan(rootSpan, "rollback")
+			}
 			orm.(*gorm.DB).Rollback()
+			if subSpan != nil {
+				subSpan.Finish()
+			}
 		}
 		
 		errMsg := ""
@@ -61,7 +75,14 @@ func RecoverPanic(ctx *Context) {
 		orm := ctx.Get("orm")
 		if orm != nil {
 			log.Logger.Debug("[ORM] commit transaction")
+			var subSpan opentracing.Span
+			if cachedSpan != nil {
+				subSpan = tracing.CreateSubSpan(rootSpan, "commit")
+			}
 			orm.(*gorm.DB).Commit()
+			if subSpan != nil {
+				subSpan.Finish()
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@ func init() {
 	user := config.ServiceConfig.String("db::DB_USER")
 	password := config.ServiceConfig.String("db::DB_PASSWORD")
 	charset := config.ServiceConfig.String("db::DB_CHARSET")
-	mysqlURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Asia%%2FShanghai", user, password, host, port, db, charset)
+	mysqlURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?interpolateParams=true&charset=%s&parseTime=True&loc=Asia%%2FShanghai", user, password, host, port, db, charset)
 	
 	var err error
 	Db, err = gorm.Open("mysql", mysqlURL)
@@ -30,5 +30,6 @@ func init() {
 		eel.Logger.Infof("[db] connect to mysql %s success!", mysqlURL)
 	}
 	
+	Db.LogMode(true)
 	eel.Runtime.DB = Db
 }

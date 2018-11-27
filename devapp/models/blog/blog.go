@@ -4,17 +4,17 @@ import (
 	"github.com/kfchen81/eel"
 )
 
+//Blog Model
 type Blog struct {
-	eel.Model
-	UserId int
+	eel.DeletableModel
+	UserId int `gorm:"index"`//foreign key for user
 	Title string `gorm:"size:1024"`
 	Content string `gorm:"size:1024"`
 }
-
-func (this *Blog) TableName() string {
+func (self *Blog) TableName() string {
 	return "blog_blog"
 }
 
 func init() {
-	eel.RegisterModel(&Blog{})
+	eel.RegisterModel(new(Blog))
 }
