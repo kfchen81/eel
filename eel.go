@@ -18,8 +18,8 @@ import (
 	"context"
 	"net/http"
 	"time"
-	"os"
 	
+	_ "github.com/kfchen81/eel/logo"
 	"github.com/kfchen81/eel/log"
 	"github.com/kfchen81/eel/config"
 	"fmt"
@@ -37,15 +37,6 @@ import (
 
 type Request handler.Request
 
-const logo = `
-    ________    __
-   / ____/ /   / /
-  / __/ / /   / /
- / /___/ /___/ /___
-/_____/_____/_____/  for speed & efficiency. v0.1
-
-
-`
 
 var endRunning chan bool
 //
@@ -164,7 +155,6 @@ func (this *Service) run() {
 }
 
 func RunService() {
-	os.Stderr.Write([]byte(logo))
 	//fmt.Println(logo)
 	service := NewService()
 	endRunning = make(chan bool, 1)
@@ -172,6 +162,9 @@ func RunService() {
 		service.run()
 	}()
 	<-endRunning
+}
+
+func init() {
 }
 
 

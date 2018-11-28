@@ -126,6 +126,10 @@ class Command(BaseCommand):
 			shutil.copyfile(src, dst)
 
 	def copy_files(self, context):
+		os.makedirs('models/%(full_package)s' % context)
+		os.makedirs('rest/%(full_package)s' % context)
+		os.makedirs('business/%(full_package)s' % context)
+
 		print '\n>>>>>>>>>> generate business objects <<<<<<<<<<'
 		src = '_generate/models/%(resource)s.go' % context
 		dst = 'models/%(full_package)s/%(resource)s.go' % context
@@ -145,6 +149,18 @@ class Command(BaseCommand):
 
 		src = '_generate/business/%(resource)s_repository.go' % context
 		dst = 'business/%(full_package)s/%(resource)s_repository.go' % context
+		self.copy_file(src, dst)
+
+		src = '_generate/business/resp_%(package)s.go' % context
+		dst = 'business/%(full_package)s/resp_%(package)s.go' % context
+		self.copy_file(src, dst)
+
+		src = '_generate/business/encode_%(resource)s_service.go' % context
+		dst = 'business/%(full_package)s/encode_%(resource)s_service.go' % context
+		self.copy_file(src, dst)
+
+		src = '_generate/business/fill_%(resource)s_service.go' % context
+		dst = 'business/%(full_package)s/fill_%(resource)s_service.go' % context
 		self.copy_file(src, dst)
 
 	def download_code_base(self, url, zipfile):
@@ -205,6 +221,7 @@ class Command(BaseCommand):
 		#	shutil.rmtree(TEMPLATE_FILE_DIR)
 
 		input = 'n'#raw_input().strip()
+		self.copy_files(names)
 		if input == 'Y' or input == 'y':
 			self.copy_files(names)
 			print '\n******************** Success ********************'

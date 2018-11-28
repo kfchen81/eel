@@ -58,25 +58,25 @@ func finishSubSpan(scope *gorm.Scope) {
 
 // support open tracing
 func beginTracingForCreate(scope *gorm.Scope) {
-	createSubSpan(scope, fmt.Sprintln("insert", scope.TableName()))
+	createSubSpan(scope, fmt.Sprintf("db-insert-%s", scope.TableName()))
 }
 func finishTracingForCreate(scope *gorm.Scope) {
 	finishSubSpan(scope)
 }
 func beginTracingForUpdate(scope *gorm.Scope) {
-	createSubSpan(scope, fmt.Sprintln("update", scope.TableName()))
+	createSubSpan(scope, fmt.Sprintf("db-update-%s", scope.TableName()))
 }
 func finishTracingForUpdate(scope *gorm.Scope) {
 	finishSubSpan(scope)
 }
 func beginTracingForDelete(scope *gorm.Scope) {
-	createSubSpan(scope, fmt.Sprintln("delete", scope.TableName()))
+	createSubSpan(scope, fmt.Sprintf("db-delete-%s", scope.TableName()))
 }
 func finishTracingForDelete(scope *gorm.Scope) {
 	finishSubSpan(scope)
 }
 func beginTracingForQuery(scope *gorm.Scope) {
-	createSubSpan(scope, fmt.Sprintln("select", scope.TableName()))
+	createSubSpan(scope, fmt.Sprintf("db-select-%s", scope.TableName()))
 }
 func finishTracingForQuery(scope *gorm.Scope) {
 	finishSubSpan(scope)

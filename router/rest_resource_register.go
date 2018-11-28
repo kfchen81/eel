@@ -135,7 +135,7 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 		
 		//add gorm's Transaction
 		if config.Runtime.DB != nil {
-			subSpan := tracing.CreateSubSpan(span, "begin")
+			subSpan := tracing.CreateSubSpan(span, "db-begin")
 			tx := config.Runtime.DB.Begin()
 			subSpan.Finish()
 			tx.InstantSet("rootSpan", span)

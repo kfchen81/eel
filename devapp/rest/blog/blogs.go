@@ -28,10 +28,10 @@ func (this *Blogs) Get(ctx *eel.Context) {
 	repository := blog.NewBlogRepository(bCtx)
 	blogs, nextPageInfo := repository.GetBlogsForUser(user, page)
 
-	//fillService := blog.NewFillBlogService(bCtx)
-	//fillService.Fill(blogs, eel.FillOption{
-	//	"with_user": true,
-	//})
+	fillService := blog.NewFillBlogService(bCtx)
+	fillService.Fill(blogs, eel.FillOption{
+		"with_user": true,
+	})
 
 	encodeService := blog.NewEncodeBlogService(bCtx)
 	rows := make([]*blog.RBlog, 0)

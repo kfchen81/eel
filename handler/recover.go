@@ -24,7 +24,7 @@ func RecoverPanic(ctx *Context) {
 			log.Logger.Warn("[ORM] rollback transaction")
 			var subSpan opentracing.Span
 			if cachedSpan != nil {
-				subSpan = tracing.CreateSubSpan(rootSpan, "rollback")
+				subSpan = tracing.CreateSubSpan(rootSpan, "db-rollback")
 			}
 			orm.(*gorm.DB).Rollback()
 			if subSpan != nil {
@@ -77,7 +77,7 @@ func RecoverPanic(ctx *Context) {
 			log.Logger.Debug("[ORM] commit transaction")
 			var subSpan opentracing.Span
 			if cachedSpan != nil {
-				subSpan = tracing.CreateSubSpan(rootSpan, "commit")
+				subSpan = tracing.CreateSubSpan(rootSpan, "db-commit")
 			}
 			orm.(*gorm.DB).Commit()
 			if subSpan != nil {
