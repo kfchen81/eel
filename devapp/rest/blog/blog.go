@@ -17,19 +17,16 @@ func (this *Blog) Resource() string {
 
 func (this *Blog) GetParameters() map[string][]string {
 	return map[string][]string{
-		"GET":    []string{"id:int"},
+		"GET":    []string{},
 		"PUT":    []string{"title", "content"},
 		"DELETE": []string{"id:int"},
 	}
 }
 
 func (this *Blog) Get(ctx *eel.Context) {
-	req := ctx.Request
-	id, _ := req.GetInt("id")
-
 	bCtx := ctx.GetBusinessContext()
 	blogRepository := b_blog.NewBlogRepository(bCtx)
-	blog := blogRepository.GetBlog(id)
+	blog := blogRepository.GetFirstBlog()
 
 	encodeService := b_blog.NewEncodeBlogService(bCtx)
 	respData := encodeService.Encode(blog)

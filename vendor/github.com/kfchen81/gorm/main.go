@@ -509,6 +509,10 @@ func (s *DB) DirectlyUpdate(attrs ...interface{}) *DB {
 	return s.Update(toSearchableMap(attrs...), true)
 }
 
+func (s *DB) OnlineUpdate(attrs ...interface{}) *DB {
+	return s.Update(toSearchableMap(attrs...), true)
+}
+
 // Updates update attributes with callbacks, refer: https://jinzhu.github.io/gorm/crud.html#update
 func (s *DB) Update(values interface{}, ignoreProtectedAttrs ...bool) *DB {
 	return s.NewScope(s.Value).

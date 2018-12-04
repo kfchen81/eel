@@ -35,6 +35,22 @@ func (this *Blog) Update(title string, content string) {
 	})
 }
 
+//Update 更新对象
+func (this *Blog) UpdateCounter(delta int) {
+	o := eel.GetOrmFromContext(this.Ctx)
+	
+	expr := "counter + ?"
+	if delta < 0 {
+		expr = "counter - ?"
+		delta = 0 - delta
+	}
+	result := o.QueryTable(&m_blog.Blog{}).OnlineUpdate("counter", gorm.Expr(expr, delta))
+	if result.Error != nil {
+		eel.Logger.Error(result.Error)
+	}
+}
+
+
 //工厂方法
 func NewBlog(ctx context.Context, user business.IUser, title string, content string) *Blog {
 	o := eel.GetOrmFromContext(ctx)

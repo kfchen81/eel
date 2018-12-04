@@ -10,6 +10,7 @@ type Blog struct {
 	UserId int `gorm:"index"`//foreign key for user
 	Title string `gorm:"size:1024"`
 	Content string `gorm:"size:1024"`
+	Counter int
 }
 func (self *Blog) TableName() string {
 	return "blog_blog"

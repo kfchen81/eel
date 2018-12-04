@@ -55,6 +55,21 @@ func (this *BlogRepository) GetBlog(id int) *Blog {
 	return blog
 }
 
+//GetBlog 根据id获得Blog对象
+func (this *BlogRepository) GetFirstBlog() *Blog {
+	var mBlog m_blog.Blog
+	
+	err := eel.GetOrmFromContext(this.Ctx).OrderBy("id").Limit(1).One(&mBlog)
+	
+	if err != nil {
+		eel.Logger.Error(err)
+		return nil
+	}
+	
+	blog := NewBlogFromModel(this.Ctx, &mBlog)
+	return blog
+}
+
 //DeleteBlog 根据id删除Blog对象
 func (this *BlogRepository) DeleteBlog(id int) bool {
 	db := eel.GetOrmFromContext(this.Ctx).QueryTable(&m_blog.Blog{})
@@ -66,6 +81,7 @@ func (this *BlogRepository) DeleteBlog(id int) bool {
 
 	return true
 }
+
 
 func init() {
 }
