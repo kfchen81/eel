@@ -32,10 +32,27 @@ func (this *EncodeBlogService) Encode(blog *Blog) *RBlog {
 		}
 	}
 
+	//编码UserVisit
+	var rUserVisits []*RUserVisit
+	var rSelfVisit *RSelfVisit
+	if blog.HasUserVisits() {
+		encodeUserVisitService := NewEncodeUserVisitService(this.Ctx)
+		rUserVisits = encodeUserVisitService.EncodeMany(blog.UserVisits)
+
+		selfVisit := blog.GetSelfVisit()
+		if selfVisit != nil {
+			rSelfVisit = &RSelfVisit{
+				Id: selfVisit.Id,
+				CreatedAt: selfVisit.CreatedAt.Format("2006-01-02 15:04:05"),
+			}
+		}
+	}
+
 	return &RBlog{
 		Id: blog.Id,
 		User: rUser,
-		
+		UserVisits: rUserVisits,
+		SelfVisit: rSelfVisit,
 		Title: blog.Title,
 		Content: blog.Content,
 		IsDeleted: blog.IsDeleted,

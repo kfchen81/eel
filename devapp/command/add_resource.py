@@ -80,9 +80,14 @@ class Command(BaseCommand):
 
 		file_path = os.path.join(dir_path, '%(resource)s.go' % names)
 		self.render_file_to('resource.go', file_path, names)
+
 		if names.get("enable_tag", False):
 			file_path = os.path.join(dir_path, '%(resource)s_tags.go' % names)
 			self.render_file_to('resource_tags.go', file_path, names)
+
+		if names.get("enable_visit", False):
+			file_path = os.path.join(dir_path, 'user_visit.go')
+			self.render_file_to('resource_user_visit.go', file_path, names)
 		
 		file_path = os.path.join(dir_path, '%(plural_resource)s.go' % names)
 		self.render_file_to('resources.go', file_path, names)
@@ -97,6 +102,12 @@ class Command(BaseCommand):
 		if names.get("enable_tag", False):
 			file_path = os.path.join(dir_path, '%(resource)s_tag.go' % names)
 			self.render_file_to('entity_tag.go', file_path, names)
+		if names.get("enable_visit", False):
+			file_path = os.path.join(dir_path, 'user_visit.go' % names)
+			self.render_file_to('entity_user_visit.go', file_path, names)
+
+			file_path = os.path.join(dir_path, 'encode_user_visit_service.go' % names)
+			self.render_file_to('encode_service_user_visit.go', file_path, names)
 		
 		file_path = os.path.join(dir_path, '%(resource)s_repository.go' % names)
 		self.render_file_to('repository.go', file_path, names)
@@ -180,6 +191,19 @@ class Command(BaseCommand):
 		dst = 'business/%(full_package)s/fill_%(resource)s_service.go' % context
 		self.copy_file(src, dst)
 
+		if context.get("enable_visit", False):
+			src = '_generate/business/user_visit.go'
+			dst = 'business/%(full_package)s/user_visit.go' % context
+			self.copy_file(src, dst)
+
+			src = '_generate/business/encode_user_visit_service.go'
+			dst = 'business/%(full_package)s/encode_user_visit_service.go' % context
+			self.copy_file(src, dst)
+
+			src = '_generate/rest/user_visit.go'
+			dst = 'rest/%(full_package)s/user_visit.go' % context
+			self.copy_file(src, dst)
+
 	def download_code_base(self, url, zipfile):
 		total_bytes = 0
 		with open(zipfile, 'wb') as handle:
@@ -226,6 +250,7 @@ class Command(BaseCommand):
 		names['full_package'] = package
 		names['resource'] = resource
 		names['enable_tag'] = False
+		names['enable_visit'] = True
 		self.generate_model_file(names)
 		self.generate_resource_file(names)
 		self.generate_business_file(names)

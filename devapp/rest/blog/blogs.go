@@ -2,8 +2,6 @@ package blog
 
 import (
 	"github.com/kfchen81/eel/devapp/business/blog"
-	"github.com/kfchen81/eel/devapp/business/account"
-
 	"github.com/kfchen81/eel"
 )
 
@@ -23,15 +21,14 @@ func (this *Blogs) GetParameters() map[string][]string {
 
 func (this *Blogs) Get(ctx *eel.Context) {
 	bCtx := ctx.GetBusinessContext()
-	user := account.GetUserFromContext(bCtx)
 	page := eel.ExtractPageInfoFromRequest(ctx)
 	repository := blog.NewBlogRepository(bCtx)
-	blogs, nextPageInfo := repository.GetBlogsForUser(user, page)
+	blogs, nextPageInfo := repository.GetBlogs(page)
 
 	fillService := blog.NewFillBlogService(bCtx)
 	fillService.Fill(blogs, eel.FillOption{
 		"with_user": true,
-		
+		"with_user_actions": true,
 	})
 
 	encodeService := blog.NewEncodeBlogService(bCtx)

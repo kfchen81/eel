@@ -22,7 +22,7 @@ type Blog struct {
 	CreatedAt time.Time
 
 	User *account.User
-	
+	UserVisits []*UserVisit
 }
 
 //Update 更新对象
@@ -36,6 +36,76 @@ func (this *Blog) Update(title string, content string) {
 	})
 }
 
+//VisitByUser user访问Blog
+func (this *Blog) VisitByUser(user business.IUser) {
+	o := eel.GetOrmFromContext(this.Ctx)
+
+	isExist := o.QueryTable(&m_blog.UserVisit{}).Filter(gorm.Map{
+		"blog_id": this.Id,
+		"user_id": user.GetId(),
+	}).Exist()
+
+	if !isExist {
+		model := &m_blog.UserVisit{}
+		model.BlogId = this.Id
+		model.UserId = user.GetId()
+		err := o.Insert(&model)
+
+		if err != nil {
+			eel.Logger.Error(err)
+			panic(eel.NewBusinessError("blog:user_visit_fail", "创建用户访问记录失败"))
+		}
+	}
+}
+
+func (this *Blog) AddUserVisit(userVisit *UserVisit) {
+	this.UserVisits = append(this.UserVisits, userVisit)
+}
+
+func (this *Blog) HasUserVisits() bool {
+	return len(this.UserVisits) > 0
+}
+
+func (this *Blog) IsVisitedByUser(user business.IUser) bool {
+	if len(this.UserVisits) == 0 {
+		//没有填充UserVisits时，通过数据库判断
+		o := eel.GetOrmFromContext(this.Ctx)
+
+		isExist := o.QueryTable(&m_blog.UserVisit{}).Filter(gorm.Map{
+			"blog_id": this.Id,
+			"user_id": user.GetId(),
+		}).Exist()
+
+		return isExist
+	} else {
+		targetId := this.Id
+		for _, userVisit := range this.UserVisits {
+			if userVisit.BlogId == targetId {
+				return true
+			}
+		}
+
+		return false
+	}
+	return len(this.UserVisits) > 0
+}
+
+func (this *Blog) GetSelfVisit() *UserVisit {
+	if len(this.UserVisits) == 0 {
+		return nil
+	} else {
+		user := account.GetUserFromContext(this.Ctx)
+		targetUserId := user.Id
+		for _, userVisit := range this.UserVisits {
+			if userVisit.UserId == targetUserId {
+				return userVisit
+			}
+		}
+
+		return nil
+	}
+}
+
 //工厂方法
 func NewBlog(ctx context.Context, user business.IUser, title string, content string) *Blog {
 	o := eel.GetOrmFromContext(ctx)
@@ -43,9 +113,9 @@ func NewBlog(ctx context.Context, user business.IUser, title string, content str
 	mBlog.UserId = user.GetId()
 	mBlog.Title = title
 	mBlog.Content = content
-	result := o.Insert(&mBlog)
-	if result.Error != nil {
-		eel.Logger.Error(result.Error)
+	err := o.Insert(&mBlog)
+	if err != nil {
+		eel.Logger.Error(err)
 		panic(eel.NewBusinessError("blog:create_fail", fmt.Sprintf("创建失败")))
 	}
 
@@ -63,6 +133,8 @@ func NewBlogFromModel(ctx context.Context, mBlog *m_blog.Blog) *Blog {
 	blog.Content = mBlog.Content
 	blog.IsDeleted = mBlog.IsDeleted
 	blog.CreatedAt = mBlog.CreatedAt
+	blog.UserVisits = make([]*UserVisit, 0)
+
 	return blog
 }
 

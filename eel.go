@@ -48,6 +48,7 @@ var endRunning chan bool
 type Context = handler.Context
 type RestResource = handler.RestResource
 type Map = handler.Map
+type BoolOption = map[string]bool
 type Middleware = handler.Middleware
 type Model = db.Model
 type DeletableModel = db.DeletableModel

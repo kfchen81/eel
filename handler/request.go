@@ -101,6 +101,19 @@ func (r *Request) GetStringArray(key string) []string {
 	}
 }
 
+func (r *Request) GetBoolOptions(key string) map[string]bool {
+	boolOption := make(map[string]bool)
+	if data, ok := r.Name2JSON[key]; ok {
+		for key, _ := range data {
+			boolOption[key] = true
+		}
+	} else {
+		return nil
+	}
+	
+	return boolOption
+}
+
 //GetJSONArray 与key对应的返回json map数据
 func (r *Request) GetJSON(key string) map[string]interface{} {
 	if data, ok := r.Name2JSON[key]; ok {

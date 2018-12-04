@@ -470,6 +470,17 @@ func (s *DB) Count() (int64, error) {
 	return value, result.db.Error
 }
 
+// robert: to Support Beego ORM's syntax
+func (s *DB) Exist() bool {
+	count, err := s.Count()
+	if err != nil {
+		fmt.Println("[gorm] Error: ", err)
+		return false
+	} else {
+		return count > 0
+	}
+}
+
 // Related get related associations
 func (s *DB) Related(value interface{}, foreignKeys ...string) *DB {
 	return s.NewScope(s.Value).related(value, foreignKeys...).db
@@ -556,9 +567,10 @@ func (s *DB) Create(value interface{}) *DB {
 }
 
 //robert: Insert is an alias for Create
-func (s *DB) Insert(value interface{}) *DB {
+func (s *DB) Insert(value interface{}) error {
 	scope := s.NewScope(value)
-	return scope.callCallbacks(s.parent.callbacks.creates).db
+	result := scope.callCallbacks(s.parent.callbacks.creates).db
+	return result.Error
 }
 
 // Delete delete value match given conditions, if the value has primary key, then will including the primary key as condition

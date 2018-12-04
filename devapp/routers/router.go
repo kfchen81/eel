@@ -10,5 +10,6 @@ func init() {
 	eel.RegisterResource(&console.Console{})
 	eel.RegisterResource(&blog.Blog{})
 	eel.RegisterResource(&blog.Blogs{})
+	eel.RegisterResource(&blog.UserVisit{})
 	//eel.RegisterResource(&blog.BlogTags{})
 }

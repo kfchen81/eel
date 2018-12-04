@@ -16,7 +16,18 @@ func (self *Blog) TableName() string {
 }
 
 
+//UserVisit Model
+type UserVisit struct {
+	eel.Model
+	BlogId int `gorm:"index"`
+	UserId int `gorm:"index"`
+}
+func (self *UserVisit) TableName() string {
+	return "blog_user_visit"
+}
+
+
 func init() {
 	eel.RegisterModel(new(Blog))
-	
+	eel.RegisterModel(new(UserVisit))
 }
