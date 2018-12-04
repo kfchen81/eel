@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"net/url"
 	"github.com/kfchen81/eel/log"
+	"encoding/json"
 )
 
 //Request
@@ -70,6 +71,31 @@ func (r *Request) SetFilters(filters map[string]interface{}) {
 func (r *Request) GetJSONArray(key string) []interface{} {
 	if data, ok := r.Name2JSONArray[key]; ok {
 		return data
+	} else {
+		return nil
+	}
+}
+
+func (r *Request) GetIntArray(key string) []int {
+	values := make([]int, 0)
+	if datas, ok := r.Name2JSONArray[key]; ok {
+		for _, data := range datas {
+			intValue, _ := strconv.Atoi(data.(json.Number).String())
+			values = append(values, intValue)
+		}
+		return values
+	} else {
+		return nil
+	}
+}
+
+func (r *Request) GetStringArray(key string) []string {
+	values := make([]string, 0)
+	if datas, ok := r.Name2JSONArray[key]; ok {
+		for _, data := range datas {
+			values = append(values, data.(string))
+		}
+		return values
 	} else {
 		return nil
 	}

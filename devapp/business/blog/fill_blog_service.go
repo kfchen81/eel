@@ -3,6 +3,7 @@ package blog
 import (
 	"context"
 	"github.com/kfchen81/eel/devapp/business/account"
+	
 	"github.com/kfchen81/eel"
 )
 
@@ -21,10 +22,15 @@ func (this *FillBlogService) Fill(blogs []*Blog, option eel.FillOption) {
 		return
 	}
 
-	if _, ok := option["with_user"]; ok {
+	blogIds := make([]int, 0)
+	for _, blog := range blogs {
+		blogIds = append(blogIds, blog.Id)
+	}
+
+	if enableOption, ok := option["with_user"]; ok && enableOption {
 		this.fillUser(blogs)
 	}
-}
+	}
 
 func (this *FillBlogService) fillUser(blogs []*Blog) {
 	userIds := make([]int, 0)

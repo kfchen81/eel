@@ -223,8 +223,8 @@ func Paginate(db *gorm.DB, page *PageInfo, container interface{}) (INextPageInfo
 			panic(err)
 		}
 		nextPageInfo = doPaginate(itemCount, page.Page, page.CountPerPage)
-		result := db.Limit(nextPageInfo.(PaginateResult).CountInPage).Offset(nextPageInfo.(PaginateResult).Offset).All(container)
-		return nextPageInfo, result.Error
+		err = db.Limit(nextPageInfo.(PaginateResult).CountInPage).Offset(nextPageInfo.(PaginateResult).Offset).All(container)
+		return nextPageInfo, err
 	}
 	
 	return nextPageInfo, err

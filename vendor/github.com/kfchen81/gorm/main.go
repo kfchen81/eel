@@ -411,8 +411,9 @@ func (s *DB) Find(out interface{}, where ...interface{}) *DB {
 }
 
 // robert: an Alias for Find, to support Beego ORM syntax
-func (s *DB) All(out interface{}) *DB {
-	return s.Find(out)
+func (s *DB) All(out interface{}) error {
+	result := s.Find(out)
+	return result.Error
 }
 
 //Preloads preloads relations, don`t touch out

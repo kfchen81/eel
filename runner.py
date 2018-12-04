@@ -111,5 +111,8 @@ class Watcher:
   
 
 if __name__ == '__main__':
-	os.system('go build -v ./devapp/main.go')
-	Watcher()
+	exit_status = os.system('go build -v ./devapp/main.go')
+	if exit_status != 0:
+		print '[Error] Compile Fail!!!'
+	else:
+		Watcher()

@@ -80,6 +80,9 @@ class Command(BaseCommand):
 
 		file_path = os.path.join(dir_path, '%(resource)s.go' % names)
 		self.render_file_to('resource.go', file_path, names)
+		if names.get("enable_tag", False):
+			file_path = os.path.join(dir_path, '%(resource)s_tags.go' % names)
+			self.render_file_to('resource_tags.go', file_path, names)
 		
 		file_path = os.path.join(dir_path, '%(plural_resource)s.go' % names)
 		self.render_file_to('resources.go', file_path, names)
@@ -91,6 +94,9 @@ class Command(BaseCommand):
 
 		file_path = os.path.join(dir_path, '%(resource)s.go' % names)
 		self.render_file_to('entity.go', file_path, names)
+		if names.get("enable_tag", False):
+			file_path = os.path.join(dir_path, '%(resource)s_tag.go' % names)
+			self.render_file_to('entity_tag.go', file_path, names)
 		
 		file_path = os.path.join(dir_path, '%(resource)s_repository.go' % names)
 		self.render_file_to('repository.go', file_path, names)
@@ -119,16 +125,22 @@ class Command(BaseCommand):
 
 	def copy_file(self, src, dst):
 		print '> copy: %s -> %s' % (src, dst)
+		shutil.copyfile(src, dst)
+		"""
 		if os.path.exists(dst):
 			print '[WARN]: %s is already EXISTS!!!, DO NOT COPY.' % dst
 			#shutil.copyfile(src, dst)
 		else:
 			shutil.copyfile(src, dst)
+		"""
 
 	def copy_files(self, context):
-		os.makedirs('models/%(full_package)s' % context)
-		os.makedirs('rest/%(full_package)s' % context)
-		os.makedirs('business/%(full_package)s' % context)
+		if not os.path.exists('models/%(full_package)s' % context):
+			os.makedirs('models/%(full_package)s' % context)
+		if not os.path.exists('rest/%(full_package)s' % context):
+			os.makedirs('rest/%(full_package)s' % context)
+		if not os.path.exists('business/%(full_package)s' % context):
+			os.makedirs('business/%(full_package)s' % context)
 
 		print '\n>>>>>>>>>> generate business objects <<<<<<<<<<'
 		src = '_generate/models/%(resource)s.go' % context
@@ -138,6 +150,11 @@ class Command(BaseCommand):
 		src = '_generate/rest/%(resource)s.go' % context
 		dst = 'rest/%(full_package)s/%(resource)s.go' % context
 		self.copy_file(src, dst)
+
+		if context.get("enable_tag", False):
+			src = '_generate/rest/%(resource)s_tags.go' % context
+			dst = 'rest/%(full_package)s/%(resource)s_tags.go' % context
+			self.copy_file(src, dst)
 
 		src = '_generate/rest/%(plural_resource)s.go' % context
 		dst = 'rest/%(full_package)s/%(plural_resource)s.go' % context
@@ -208,6 +225,7 @@ class Command(BaseCommand):
 		names['package'] = package
 		names['full_package'] = package
 		names['resource'] = resource
+		names['enable_tag'] = False
 		self.generate_model_file(names)
 		self.generate_resource_file(names)
 		self.generate_business_file(names)

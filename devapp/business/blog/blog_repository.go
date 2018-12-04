@@ -19,7 +19,7 @@ func NewBlogRepository(ctx context.Context) *BlogRepository {
 	return repository
 }
 
-//GetBlogs 获得Blog对象集合
+//GetBlogsForUser 获得Blog对象集合
 func (this *BlogRepository) GetBlogsForUser(user business.IUser, page *eel.PageInfo) ([]*Blog, eel.INextPageInfo) {
 	o := eel.GetOrmFromContext(this.Ctx)
 	qs := o.QueryTable(&m_blog.Blog{})
@@ -55,17 +55,17 @@ func (this *BlogRepository) GetBlog(id int) *Blog {
 	return blog
 }
 
-//GetBlog 根据id获得Blog对象
-func (this *BlogRepository) GetFirstBlog() *Blog {
+//GetBlogForUser 根据user和id获得Blog对象
+func (this *BlogRepository) GetBlogForUser(user business.IUser, id int) *Blog {
 	var mBlog m_blog.Blog
-	
-	err := eel.GetOrmFromContext(this.Ctx).OrderBy("id").Limit(1).One(&mBlog)
-	
+
+	err := eel.GetOrmFromContext(this.Ctx).Filter("user_id", user.GetId()).Filter("id", id).One(&mBlog)
+
 	if err != nil {
 		eel.Logger.Error(err)
 		return nil
 	}
-	
+
 	blog := NewBlogFromModel(this.Ctx, &mBlog)
 	return blog
 }
@@ -81,7 +81,6 @@ func (this *BlogRepository) DeleteBlog(id int) bool {
 
 	return true
 }
-
 
 func init() {
 }

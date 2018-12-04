@@ -35,6 +35,7 @@ func (this *EncodeBlogService) Encode(blog *Blog) *RBlog {
 	return &RBlog{
 		Id: blog.Id,
 		User: rUser,
+		
 		Title: blog.Title,
 		Content: blog.Content,
 		IsDeleted: blog.IsDeleted,
