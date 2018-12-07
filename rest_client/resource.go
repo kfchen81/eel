@@ -91,7 +91,7 @@ func (this *Resource) request(method string, service string, resource string, da
 			params.Set(k, value)
 		}
 		apiUrl += "?" + params.Encode()
-		log.Logger.Warn("apiUrl: ", apiUrl)
+		log.Logger.Info("apiUrl: ", apiUrl)
 		//strings.NewReader(values.Encode())
 
 		req, err = http.NewRequest("GET", apiUrl, nil)

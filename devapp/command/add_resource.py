@@ -88,6 +88,9 @@ class Command(BaseCommand):
 		if names.get("enable_visit", False):
 			file_path = os.path.join(dir_path, 'user_visit.go')
 			self.render_file_to('resource_user_visit.go', file_path, names)
+
+			# file_path = os.path.join(dir_path, 'user_visits.go' % names)
+			# self.render_file_to('resource_user_visits.go', file_path, names)
 		
 		file_path = os.path.join(dir_path, '%(plural_resource)s.go' % names)
 		self.render_file_to('resources.go', file_path, names)
@@ -203,6 +206,10 @@ class Command(BaseCommand):
 			src = '_generate/rest/user_visit.go'
 			dst = 'rest/%(full_package)s/user_visit.go' % context
 			self.copy_file(src, dst)
+
+			# src = '_generate/rest/user_visits.go'
+			# dst = 'rest/%(full_package)s/user_visits.go' % context
+			# self.copy_file(src, dst)
 
 	def download_code_base(self, url, zipfile):
 		total_bytes = 0

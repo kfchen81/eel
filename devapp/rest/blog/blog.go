@@ -32,6 +32,12 @@ func (this *Blog) Get(ctx *eel.Context) {
 	blogRepository := b_blog.NewBlogRepository(bCtx)
 	blog := blogRepository.GetBlog(id)
 
+	fillService := b_blog.NewFillBlogService(bCtx)
+	fillService.Fill([]*b_blog.Blog{ blog }, eel.FillOption{
+		"with_user": true,
+		"with_user_actions": true,
+	})
+
 	encodeService := b_blog.NewEncodeBlogService(bCtx)
 	respData := encodeService.Encode(blog)
 
