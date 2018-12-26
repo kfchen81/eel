@@ -141,13 +141,16 @@ func (this *Service) run() {
 
 	this.Server.Handler = this.Handler
 	readTimeout := time.Duration(config.ServiceConfig.DefaultInt("service::READ_TIMEOUT", 30))
-	writeTimeout := time.Duration(config.ServiceConfig.DefaultInt("service::WRITE_TIMEOUT", 10))
+	writeTimeout := time.Duration(config.ServiceConfig.DefaultInt("service::WRITE_TIMEOUT", 30))
 	readTimeout = 30
+	writeTimeout = 30
 	this.Server.ReadTimeout = readTimeout * time.Second
 	this.Server.WriteTimeout = writeTimeout * time.Second
 	this.Server.Addr = addr
 	
 	Logger.Infof("http server Running on http://%s\n", this.Server.Addr)
+	Logger.Info(this.Server.ReadTimeout)
+	Logger.Info(this.Server.WriteTimeout)
 	if err := this.Server.ListenAndServe(); err != nil {
 		Logger.Fatalf("ListenAndServe: ", err)
 		time.Sleep(100 * time.Microsecond)

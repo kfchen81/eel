@@ -102,8 +102,6 @@ class ServiceClient(object):
 
 		host = '127.0.0.1'
 		return "http://{}:{}/{}/{}/?_v=1".format(host, SERVICE2PORT[service], app, resource)
-		# host = 'preapi.vxiaocheng.com'
-		# return "http://{}/{}/{}/{}/?_v=1".format(host, service, app, resource)
 
 	def get(self, resource, data={}, jwt_token=''):
 		url = self.__get_url(resource)

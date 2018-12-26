@@ -24,6 +24,8 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/kfchen81/eel/tracing"
 	"github.com/kfchen81/eel/config"
+	"github.com/astaxie/beego"
+	"net/http/pprof"
 )
 
 type RestResourceRegister struct {
@@ -98,6 +100,20 @@ func (this *RestResourceRegister) ServeHTTP(resp http.ResponseWriter, req *http.
 	
 	//determine the resource will handle the request
 	endpoint := req.URL.Path
+	if strings.HasPrefix(endpoint, "/debug/pprof/") {
+		if endpoint == "/debug/pprof/profile" {
+			pprof.Profile(resp, req)
+		} else if endpoint == "/debug/pprof/cmdline" {
+			pprof.Cmdline(resp, req)
+		} else if endpoint == "/debug/pprof/symbol" {
+			pprof.Symbol(resp, req)
+		} else {
+			pprof.Index(resp, req)
+		}
+		return
+	}
+	
+	beego.Warn(endpoint)
 	if endpoint[len(endpoint)-1] != '/' {
 		endpoint = endpoint + "/"
 	}

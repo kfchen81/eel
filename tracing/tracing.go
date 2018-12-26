@@ -21,14 +21,24 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 	var cfg *config.Configuration
 	
 	if tracingMode == "dev" {
+		//cfg = &config.Configuration{
+		//	Sampler: &config.SamplerConfig{
+		//		Type:  "const",
+		//		Param: 1,
+		//	},
+		//	Reporter: &config.ReporterConfig{
+		//		LogSpans: true,
+		//		BufferFlushInterval: 1 * time.Second,
+		//	},
+		//}
 		cfg = &config.Configuration{
 			Sampler: &config.SamplerConfig{
-				Type:  "const",
-				Param: 1,
+				Type:  "probabilistic",
+				Param: 0.0001,
 			},
 			Reporter: &config.ReporterConfig{
-				LogSpans: true,
-				BufferFlushInterval: 1 * time.Second,
+				LogSpans: false,
+				BufferFlushInterval: 5 * time.Second,
 			},
 		}
 	} else {
